@@ -7,11 +7,23 @@ public class Usuario {
     private String email;
     private String password_hash;
     private String telefono;
-    private String fecha_creacion;
+    private String nombreRol;
     private boolean activo;
-    private String nombreRol; // nombre del rol (JOIN con la tabla rol)
 
-    // Getters y Setters
+    public Usuario() {}
+
+    public Usuario(int id_usuario, int id_rol, String nombre, String email, String password_hash, String telefono, boolean activo, String nombreRol) {
+        this.id_usuario = id_usuario;
+        this.id_rol = id_rol;
+        this.nombre = nombre;
+        this.email = email;
+        this.password_hash = password_hash;
+        this.telefono = telefono;
+        this.activo = activo;
+        this.nombreRol = nombreRol;
+    }
+
+    // Getters y setters
     public int getId_usuario() { return id_usuario; }
     public void setId_usuario(int id_usuario) { this.id_usuario = id_usuario; }
 
@@ -29,9 +41,6 @@ public class Usuario {
 
     public String getTelefono() { return telefono; }
     public void setTelefono(String telefono) { this.telefono = telefono; }
-
-    public String getFecha_creacion() { return fecha_creacion; }
-    public void setFecha_creacion(String fecha_creacion) { this.fecha_creacion = fecha_creacion; }
 
     public boolean isActivo() { return activo; }
     public void setActivo(boolean activo) { this.activo = activo; }

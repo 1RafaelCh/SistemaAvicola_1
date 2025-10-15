@@ -26,7 +26,7 @@ public class LoginServlet extends HttpServlet {
 
             switch (usuario.getNombreRol()) {
                 case "ADMIN":
-                    response.sendRedirect("vistas/panel_admin.jsp");
+                response.sendRedirect("vistas/admin/dashboard.jsp");
                     break;
                 case "VENDEDOR":
                     response.sendRedirect("vistas/panel_vendedor.jsp");
