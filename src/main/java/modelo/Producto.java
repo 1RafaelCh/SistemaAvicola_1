@@ -9,11 +9,8 @@ public class Producto {
     private double precio;
     private int id_proveedor;
     private int stock;
-
-    // NUEVO
     private Integer stockMinimo;
-
-    // getters/setters existentes...
+  
     public int getId_producto() { return id_producto; }
     public void setId_producto(int id_producto) { this.id_producto = id_producto; }
 
@@ -38,7 +35,6 @@ public class Producto {
     public int getStock() { return stock; }
     public void setStock(int stock) { this.stock = stock; }
 
-    // NUEVO
     public Integer getStockMinimo() { return stockMinimo; }
     public void setStockMinimo(Integer stockMinimo) { this.stockMinimo = stockMinimo; }
 }

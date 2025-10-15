@@ -13,7 +13,7 @@ public class LogoutServlet extends HttpServlet {
 
         HttpSession session = request.getSession(false);
         if (session != null) {
-            session.invalidate(); // destruye la sesión activa
+            session.invalidate(); 
         }
 
         response.sendRedirect("vistas/login.jsp");

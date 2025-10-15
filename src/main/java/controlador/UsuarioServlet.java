@@ -39,7 +39,6 @@ public class UsuarioServlet extends HttpServlet {
             response.sendRedirect("vistas/admin/usuarios.jsp?msg=" + (ok ? "ok" : "error"));
 
         } else {
-            // Por defecto, listar
             List<Usuario> lista = dao.listarUsuarios();
             request.setAttribute("usuarios", lista);
             RequestDispatcher rd = request.getRequestDispatcher("vistas/admin/usuarios.jsp");
@@ -58,7 +57,6 @@ public class UsuarioServlet extends HttpServlet {
         PrintWriter out = response.getWriter();
 
         try {
-            // Parámetros
             String idUsuarioStr = request.getParameter("id_usuario");
             String idRolStr     = request.getParameter("id_rol");
             String nombre       = request.getParameter("nombre");
@@ -66,11 +64,10 @@ public class UsuarioServlet extends HttpServlet {
             String password     = request.getParameter("password_hash");
             String telefono     = request.getParameter("telefono");
 
-            // Validaciones mínimas
             if (idRolStr == null || idRolStr.isBlank()
              || nombre == null || nombre.isBlank()
              || email == null  || email.isBlank()
-             || ((idUsuarioStr == null || idUsuarioStr.isBlank()) // es creación
+             || ((idUsuarioStr == null || idUsuarioStr.isBlank()) 
                     && (password == null || password.isBlank()))) {
                 out.print(json("error",
                         "Faltan datos obligatorios (id_rol, nombre, email y contraseña para crear)."));
@@ -85,19 +82,17 @@ public class UsuarioServlet extends HttpServlet {
             u.setNombre(nombre);
             u.setEmail(email);
             u.setTelefono(telefono);
-            u.setPassword_hash(password); // en actualizar puede venir vacío (tu DAO lo maneja)
+            u.setPassword_hash(password);
 
             UsuarioDAO dao = new UsuarioDAO();
             boolean exito;
             String msg;
 
             if (idUsuarioStr != null && !idUsuarioStr.isBlank()) {
-                // actualizar
                 u.setId_usuario(Integer.parseInt(idUsuarioStr));
                 exito = dao.actualizarUsuario(u);
                 msg = exito ? "Usuario actualizado correctamente." : "Error al actualizar usuario.";
             } else {
-                // crear
                 exito = dao.agregarUsuario(u);
                 msg = exito ? "Usuario agregado correctamente." : "Error al agregar usuario.";
             }
@@ -113,13 +108,13 @@ public class UsuarioServlet extends HttpServlet {
         }
     }
 
-    // Utilidad simple para responder JSON sin librerías
     private String json(String status, String msg) {
         if (status == null) status = "";
         if (msg == null) msg = "";
         msg = msg.replace("\\","\\\\").replace("\"","\\\"");
         return "{\"status\":\"" + status + "\",\"msg\":\"" + msg + "\"}";
     }
+    
 }
 
 

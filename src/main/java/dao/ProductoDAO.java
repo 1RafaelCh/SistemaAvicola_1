@@ -32,8 +32,7 @@ public class ProductoDAO {
             p.setPrecio(rs.getDouble("precio"));
             p.setId_proveedor(rs.getObject("id_proveedor") == null ? 0 : rs.getInt("id_proveedor"));
             p.setStock(rs.getInt("stock"));
-
-            // ↓ stock_minimo puede venir NULL (LEFT JOIN)
+            // Stock minimo puede venir NULL (LEFT JOIN)
             Object sm = rs.getObject("stock_minimo");
             p.setStockMinimo(sm == null ? null : ((Number) sm).intValue());
 
@@ -45,28 +44,35 @@ public class ProductoDAO {
     }
     return lista;
 }
-    public void agregarProducto(Producto p) {
-        String sql = "INSERT INTO producto (codigo, nombre, descripcion, unidad_medida, categoria, precio, id_proveedor, stock) " +
-                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-        try (Connection con = ConexionBD.conectar();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+public void agregarProducto(Producto p) {
+    String sql =
+        "INSERT INTO producto (nombre, descripcion, unidad_medida, categoria, precio, id_proveedor, stock, activo) " +
+        "VALUES (?, ?, ?, ?, ?, ?, ?, 1) " +
+        "ON DUPLICATE KEY UPDATE " +
+        "  descripcion = VALUES(descripcion), " +
+        "  precio      = VALUES(precio), " +          
+        "  id_proveedor= VALUES(id_proveedor), " +
+        "  stock      = producto.stock + VALUES(stock), " + 
+        "  activo     = 1";
 
-            ps.setNull(1, Types.VARCHAR); // si luego quieres código, lo generamos
-            ps.setString(2, p.getNombre());
-            ps.setString(3, p.getDescripcion());
-            ps.setString(4, p.getUnidad_medida());
-            ps.setString(5, p.getCategoria());
-            ps.setDouble(6, p.getPrecio());
-            if (p.getId_proveedor() > 0) ps.setInt(7, p.getId_proveedor()); else ps.setNull(7, Types.INTEGER);
-            ps.setInt(8, p.getStock());
-            ps.executeUpdate();
+    try (Connection con = ConexionBD.conectar();
+         PreparedStatement ps = con.prepareStatement(sql)) {
 
-        } catch (SQLException e) {
-            System.out.println("❌ Error al insertar producto: " + e.getMessage());
-        }
+        ps.setString(1, p.getNombre());
+        ps.setString(2, p.getDescripcion());
+        ps.setString(3, p.getUnidad_medida());
+        ps.setString(4, p.getCategoria());
+        ps.setDouble(5, p.getPrecio());
+        if (p.getId_proveedor() > 0) ps.setInt(6, p.getId_proveedor());
+        else ps.setNull(6, java.sql.Types.INTEGER);
+        ps.setInt(7, p.getStock());
+
+        ps.executeUpdate();
+    } catch (SQLException e) {
+        System.out.println("❌ Error al upsert producto: " + e.getMessage());
     }
+}
 
-    // NUEVO: actualizar
     public boolean actualizarProducto(Producto p) {
         String sql = "UPDATE producto SET nombre=?, descripcion=?, unidad_medida=?, categoria=?, precio=?, id_proveedor=?, stock=? " +
                      "WHERE id_producto=?";
@@ -90,7 +96,6 @@ public class ProductoDAO {
         return false;
     }
 
-    // NUEVO: eliminar (borrado lógico)
     public boolean eliminarProducto(int id) {
         String sql = "UPDATE producto SET activo=0 WHERE id_producto=?";
         try (Connection con = ConexionBD.conectar();
@@ -102,4 +107,24 @@ public class ProductoDAO {
         }
         return false;
     }
+public int contarProductosActivos() {
+    String sql = "SELECT COUNT(*) FROM producto WHERE activo = 1";
+    try (Connection con = ConexionBD.conectar();
+         PreparedStatement ps = con.prepareStatement(sql);
+         ResultSet rs = ps.executeQuery()) {
+        if (rs.next()) return rs.getInt(1);
+    } catch (SQLException e) { e.printStackTrace(); }
+    return 0;
+}
+
+public long sumarStockTotal() {
+    String sql = "SELECT COALESCE(SUM(COALESCE(stock,0)),0) FROM producto WHERE activo = 1";
+    try (Connection con = ConexionBD.conectar();
+         PreparedStatement ps = con.prepareStatement(sql);
+         ResultSet rs = ps.executeQuery()) {
+        if (rs.next()) return rs.getLong(1);
+    } catch (SQLException e) { e.printStackTrace(); }
+    return 0L;
+}
+
 }

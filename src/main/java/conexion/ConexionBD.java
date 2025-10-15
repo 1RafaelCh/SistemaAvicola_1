@@ -4,12 +4,11 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class ConexionBD {
-    // Configura los datos de tu base de datos
     private static final String URL = "jdbc:mysql://localhost:3306/bd_avicola";
     private static final String USER = "root";
     private static final String PASS = ""; // si tienes contraseña, escríbela aquí
 
-    // Método para conectar
+
     public static Connection conectar() {
         Connection conn = null;
         try {
@@ -24,7 +23,6 @@ public class ConexionBD {
         return conn;
     }
 
-    // Método principal de prueba (opcional)
     public static void main(String[] args) {
         conectar();
     }

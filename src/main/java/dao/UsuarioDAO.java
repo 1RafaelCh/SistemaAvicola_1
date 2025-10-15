@@ -1,19 +1,13 @@
 package dao;
 
 import modelo.Usuario;
-import conexion.ConexionBD; // usa tu clase exacta
+import conexion.ConexionBD;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class UsuarioDAO {
-
-    // === Configuración: cambia a true si quieres borrado lógico ===
-    private static final boolean SOFT_DELETE = false; // false = DELETE físico
-
-    // =====================
-    // LISTAR
-    // =====================
+    private static final boolean SOFT_DELETE = false; 
     public List<Usuario> listarUsuarios() {
         List<Usuario> lista = new ArrayList<>();
         String base = "SELECT u.id_usuario, u.id_rol, u.nombre, u.email, u.password_hash, u.telefono, u.activo, r.nombre AS rol_nombre " +
@@ -40,10 +34,6 @@ public class UsuarioDAO {
         }
         return lista;
     }
-
-    // =====================
-    // INSERTAR
-    // =====================
     public boolean agregarUsuario(Usuario u) {
         String sql = "INSERT INTO usuario (id_rol, nombre, email, password_hash, telefono, activo) VALUES (?, ?, ?, ?, ?, 1)";
         try (Connection con = ConexionBD.conectar();
@@ -55,7 +45,6 @@ public class UsuarioDAO {
             ps.setString(5, u.getTelefono());
             return ps.executeUpdate() == 1;
         } catch (SQLIntegrityConstraintViolationException dup) {
-            // email duplicado u otra restricción
             System.err.println("Violación de restricción (posible email duplicado): " + dup.getMessage());
             return false;
         } catch (SQLException e) {
@@ -63,10 +52,6 @@ public class UsuarioDAO {
             return false;
         }
     }
-
-    // =====================
-    // ACTUALIZAR (password opcional)
-    // =====================
     public boolean actualizarUsuario(Usuario u) {
         boolean cambiarPass = u.getPassword_hash() != null && !u.getPassword_hash().isEmpty();
         String sql = "UPDATE usuario SET id_rol=?, nombre=?, email=?, telefono=?" + (cambiarPass ? ", password_hash=?" : "") + " WHERE id_usuario=?";
@@ -88,10 +73,6 @@ public class UsuarioDAO {
             return false;
         }
     }
-
-    // =====================
-    // ELIMINAR (físico o lógico)
-    // =====================
     public boolean eliminarUsuario(int id) {
         String sql = SOFT_DELETE ? "UPDATE usuario SET activo = 0 WHERE id_usuario = ?"
                                  : "DELETE FROM usuario WHERE id_usuario = ?";
@@ -104,10 +85,6 @@ public class UsuarioDAO {
             return false;
         }
     }
-
-    // =====================
-    // (Opcional) LOGIN Y OBTENER POR ID — si ya los tienes puedes mantenerlos
-    // =====================
     public Usuario validarLogin(String email, String password) {
         String sql = "SELECT u.id_usuario, u.id_rol, u.nombre, u.email, u.telefono, u.activo, r.nombre AS rol_nombre " +
                      "FROM usuario u INNER JOIN rol r ON u.id_rol = r.id_rol " +
@@ -161,6 +138,15 @@ public class UsuarioDAO {
         }
         return null;
     }
+public int contarUsuariosActivos() {
+    String sql = "SELECT COUNT(*) FROM usuario WHERE activo = 1";
+    try (Connection con = ConexionBD.conectar();
+         PreparedStatement ps = con.prepareStatement(sql);
+         ResultSet rs = ps.executeQuery()) {
+        if (rs.next()) return rs.getInt(1);
+    } catch (SQLException e) { e.printStackTrace(); }
+    return 0;
+}
 }
 
 
