@@ -1,0 +1,45 @@
+body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    margin: 0;
+    background-color: #fff8e1;
+}
+
+.sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 220px;
+    height: 100vh;
+    background-color: #c62828; /* ← ROJO */
+    color: white;
+    padding-top: 30px;
+}
+
+.sidebar h3 {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.sidebar a {
+    display: block;
+    color: white;
+    padding: 12px 20px;
+    text-decoration: none;
+    transition: background 0.3s;
+}
+
+.sidebar a:hover {
+    background-color: #b71c1c;
+}
+
+.main-content {
+    margin-left: 230px; /* deja espacio para el menú */
+    padding: 20px;
+}
+
+.card {
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+

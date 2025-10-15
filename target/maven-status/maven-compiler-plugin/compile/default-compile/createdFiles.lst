@@ -1,0 +1,10 @@
+com\mycompany\sistemaavicola_1\JakartaRestConfiguration.class
+com\mycompany\sistemaavicola_1\resources\JakartaEE10Resource.class
+modelo\Producto.class
+dao\UsuarioDAO.class
+dao\ProductoDAO.class
+controlador\ProductoServlet.class
+modelo\Usuario.class
+controlador\LogoutServlet.class
+conexion\ConexionBD.class
+controlador\LoginServlet.class
