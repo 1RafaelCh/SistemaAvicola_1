@@ -8,9 +8,12 @@ public class Producto {
     private String categoria;
     private double precio;
     private int id_proveedor;
-    private int stock; // <- nuevo
+    private int stock;
 
-    // Getters y Setters
+    // NUEVO
+    private Integer stockMinimo;
+
+    // getters/setters existentes...
     public int getId_producto() { return id_producto; }
     public void setId_producto(int id_producto) { this.id_producto = id_producto; }
 
@@ -32,6 +35,10 @@ public class Producto {
     public int getId_proveedor() { return id_proveedor; }
     public void setId_proveedor(int id_proveedor) { this.id_proveedor = id_proveedor; }
 
-    public int getStock() { return stock; }         // nuevo
-    public void setStock(int stock) { this.stock = stock; } // nuevo
+    public int getStock() { return stock; }
+    public void setStock(int stock) { this.stock = stock; }
+
+    // NUEVO
+    public Integer getStockMinimo() { return stockMinimo; }
+    public void setStockMinimo(Integer stockMinimo) { this.stockMinimo = stockMinimo; }
 }

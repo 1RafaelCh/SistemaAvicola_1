@@ -1,21 +1,27 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%
+    String ctx = request.getContextPath(); // ej: /SistemaAvicola_1
+%>
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <title>Panel de Administración - Avícola D&D</title>
-    <link rel="stylesheet" href="../../recursos/css/sidebar.css">
+    <!-- siempre con contextPath para que el CSS cargue -->
+    <link rel="stylesheet" href="<%=ctx%>/recursos/css/sidebar.css">
 </head>
 <body>
     <div class="sidebar">
         <h3>🐔 Avícola D&D</h3>
-        <a href="dashboard.jsp">🏠 Inicio</a>
-        <a href="usuarios.jsp">👤 Usuarios</a>
-        <a href="productos.jsp">📦 Productos</a>
-        <a href="inventario.jsp">📊 Inventario</a>
-        <a href="reportes.jsp">📈 Reportes</a>
-        <a href="proveedores.jsp">🚚 Proveedores</a>
-        <a href="../login.jsp">🚪 Cerrar sesión</a>
+        <a href="<%=ctx%>/vistas/admin/dashboard.jsp">🏠 Inicio</a>
+        <!-- Usuarios: ir por el servlet para listar con datos -->
+        <a href="<%=ctx%>/UsuarioServlet?accion=listar">👤 Usuarios</a>
+        <a href="<%=ctx%>/ProductoServlet?accion=listar">📦 Productos</a>
+        <a href="<%=ctx%>/vistas/admin/inventario.jsp">📊 Inventario</a>
+        <a href="<%=ctx%>/vistas/admin/reportes.jsp">📈 Reportes</a>
+        <a href="<%=ctx%>/vistas/admin/proveedores.jsp">🚚 Proveedores</a>
+        <!-- Cerrar sesión: apunta al LogoutServlet -->
+        <a href="<%=ctx%>/vistas/login.jsp">🚪 Cerrar sesión</a>
     </div>
 
     <div class="main-content">
@@ -34,3 +40,5 @@
     </div>
 </body>
 </html>
+
+

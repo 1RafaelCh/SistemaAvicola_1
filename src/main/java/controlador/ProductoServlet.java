@@ -11,28 +11,36 @@ import jakarta.servlet.http.*;
 @WebServlet("/ProductoServlet")
 public class ProductoServlet extends HttpServlet {
 
-    // Método GET → mostrar productos
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
         String accion = request.getParameter("accion");
+        if (accion == null) accion = "listar";
+
         ProductoDAO dao = new ProductoDAO();
 
-        if (accion == null || accion.equals("listar")) {
-            // Obtenemos los productos desde la BD
-            List<Producto> lista = dao.listarProductos();
+            switch (accion) {
+              case "listar":
+                List<Producto> lista = dao.listarProductos();
+                request.setAttribute("listaProductos", lista);
+                request.getRequestDispatcher("/vistas/admin/productos.jsp")
+                       .forward(request, response);
+                break;
 
-            // Enviamos la lista a la vista JSP
-            request.setAttribute("listaProductos", lista);
+              case "eliminar":
+                int id = Integer.parseInt(request.getParameter("id"));
+                boolean ok = dao.eliminarProducto(id);
+                response.sendRedirect(request.getContextPath()
+                    + "/ProductoServlet?accion=listar&msg=" + (ok ? "ok" : "error"));
+                break;
 
-            // Redirigimos hacia productos.jsp
-            RequestDispatcher rd = request.getRequestDispatcher("vistas/productos.jsp");
-            rd.forward(request, response);
-        }
+              default:
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Acción no soportada");
+            }
+
     }
 
-    // Método POST → agregar producto desde el formulario
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -40,35 +48,43 @@ public class ProductoServlet extends HttpServlet {
         String accion = request.getParameter("accion");
         ProductoDAO dao = new ProductoDAO();
 
-if ("agregar".equals(accion)) {
-    Producto p = new Producto();
-    p.setNombre(request.getParameter("nombre"));
-    p.setDescripcion(request.getParameter("descripcion"));
-    p.setUnidad_medida(request.getParameter("unidad_medida"));
-    p.setCategoria(request.getParameter("categoria"));
-    // precio (manejar excepción)
-    try {
-        p.setPrecio(Double.parseDouble(request.getParameter("precio")));
-    } catch (NumberFormatException e) {
-        p.setPrecio(0.0);
-    }
-    // id_proveedor (opcional)
-    try {
-        String prov = request.getParameter("id_proveedor");
-        p.setId_proveedor((prov != null && !prov.isEmpty()) ? Integer.parseInt(prov) : 0);
-    } catch (NumberFormatException e) {
-        p.setId_proveedor(0);
-    }
-    // stock (opcional)
-    try {
-        String s = request.getParameter("stock");
-        p.setStock((s != null && !s.isEmpty()) ? Integer.parseInt(s) : 0);
-    } catch (NumberFormatException e) {
-        p.setStock(0);
-    }
+        if ("agregar".equals(accion) || "actualizar".equals(accion)) {
+            Producto p = new Producto();
 
-    dao.agregarProducto(p);
-    response.sendRedirect("ProductoServlet?accion=listar");
-}
+            // si viene id → es actualización
+            String idStr = request.getParameter("id_producto");
+            if (idStr != null && !idStr.isBlank()) {
+                p.setId_producto(Integer.parseInt(idStr));
+            }
+
+            p.setNombre(request.getParameter("nombre"));
+            p.setDescripcion(request.getParameter("descripcion"));
+            p.setUnidad_medida(request.getParameter("unidad_medida"));
+            p.setCategoria(request.getParameter("categoria"));
+
+            try { p.setPrecio(Double.parseDouble(request.getParameter("precio"))); }
+            catch (Exception e) { p.setPrecio(0.0); }
+
+            try {
+                String prov = request.getParameter("id_proveedor");
+                p.setId_proveedor((prov != null && !prov.isBlank()) ? Integer.parseInt(prov) : 0);
+            } catch (Exception e) { p.setId_proveedor(0); }
+
+            try {
+                String s = request.getParameter("stock");
+                p.setStock((s != null && !s.isBlank()) ? Integer.parseInt(s) : 0);
+            } catch (Exception e) { p.setStock(0); }
+
+            if (p.getId_producto() > 0) {
+                dao.actualizarProducto(p);
+            } else {
+                dao.agregarProducto(p);
+            }
+            response.sendRedirect(request.getContextPath() + "/ProductoServlet?accion=listar");
+            return;
+        }
+
+        response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Acción no soportada");
     }
 }
+

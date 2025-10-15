@@ -48,3 +48,4 @@ public class Usuario {
     public String getNombreRol() { return nombreRol; }
     public void setNombreRol(String nombreRol) { this.nombreRol = nombreRol; }
 }
+

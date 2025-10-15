@@ -6,5 +6,6 @@ dao\ProductoDAO.class
 controlador\ProductoServlet.class
 modelo\Usuario.class
 controlador\LogoutServlet.class
+controlador\UsuarioServlet.class
 conexion\ConexionBD.class
 controlador\LoginServlet.class
